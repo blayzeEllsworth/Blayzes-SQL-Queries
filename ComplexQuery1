@@ -1,0 +1,23 @@
+/*TASK: Write	a	query	to	list	the	country	in	which	an	office	situated	in	that
+has	the	most	number	of	customers	that	are	NOT	from	the	same	country	as	the	office.
+*/
+
+USE ClassicModels;
+
+WITH
+TableX AS (SELECT o.country, COUNT(customerNumber) AS numCusts
+FROM Customers c
+JOIN Employees e ON c.salesRepEmployeeNumber = e.employeeNumber
+JOIN Offices o ON o.officeCode = e.officeCode
+WHERE o.country != c.country
+GROUP BY o.country)
+#Table is now built to extract pertinent details from
+
+SELECT o.country, COUNT(customerNumber) AS numCusts
+FROM Customers c
+JOIN Employees e ON c.salesRepEmployeeNumber = e.employeeNumber
+JOIN Offices o ON o.officeCode = e.officeCode
+WHERE o.country!= c.country
+GROUP BY o.country
+HAVING COUNT(customerNumber) = (SELECT MAX(numCusts) FROM TableX);
+
